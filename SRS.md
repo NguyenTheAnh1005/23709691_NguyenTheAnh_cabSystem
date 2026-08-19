@@ -396,6 +396,16 @@ B12. Tiêu chí chấp nhận
 | Bảo mật & ổn định | Xác thực người dùng, mã hóa dữ liệu, hệ thống ổn định và phục hồi nhanh |
 
 
+B.13 Truy xuất nguồn gốc yêu cầu
+
+| **Business Requirement (BR)** | **Functional Requirement (FR)** | **Use Case** | **Acceptance Criteria / Test Case** |
+|--------------------------------|---------------------------------|--------------|-------------------------------------|
+| BR1 – Quản lý khách hàng | FR1.1 Đăng ký tài khoản, FR1.2 Đăng nhập, FR1.3 Quản lý thông tin | UC1 Đăng ký/Đăng nhập | TC1: Người dùng tạo tài khoản thành công, TC2: Đăng nhập đúng/sai |
+| BR2 – Quản lý tài xế | FR2.1 Quản lý hồ sơ, FR2.2 Quản lý phương tiện, FR2.3 Chuyển trạng thái | UC6 Quản lý hồ sơ, UC7 Nhận chuyến | TC3: Tài xế cập nhật hồ sơ, TC4: Nhận chuyến thành công |
+| BR3 – Tìm và phân công tài xế | FR3.1 Xác định vị trí khách, FR3.2 Tìm tài xế sẵn có, FR3.3 Lọc loại xe, FR3.4 Tính khoảng cách | UC2 Tạo yêu cầu đặt xe, UC7 Nhận chuyến | TC5: Hệ thống tìm tài xế gần nhất, TC6: Xử lý từ chối/không phản hồi |
+| BR4 – Thanh toán | FR4.1 Tính cước, FR4.2 Thanh toán tiền mặt, FR4.3 Thanh toán điện tử | UC4 Thanh toán | TC7: Tính cước chính xác, TC8: Thanh toán điện tử thành công/thất bại |
+| BR5 – Thông báo | FR5.1 Gửi thông báo khách hàng, FR5.2 Gửi thông báo tài xế | UC3 Theo dõi trạng thái, UC8 Cập nhật chuyến đi | TC9: Khách hàng nhận thông
+
 
 
 
