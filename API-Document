@@ -356,6 +356,8 @@ paths:
           description: Trip not found
 
   /trips/{tripId}/accept:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
     post:
       tags: [Trips]
       summary: Driver accepts a trip
@@ -376,6 +378,8 @@ paths:
           description: Trip not found
 
   /trips/{tripId}/status:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
     patch:
       tags: [Trips]
       summary: Update trip status
@@ -406,6 +410,8 @@ paths:
           description: Trip not found
 
   /trips/{tripId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
     post:
       tags: [Trips]
       summary: Cancel a trip
@@ -434,6 +440,8 @@ paths:
           description: Trip not found
 
   /trips/{tripId}/fare:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
     get:
       tags: [Payments]
       summary: Calculate trip fare
@@ -448,6 +456,8 @@ paths:
           description: Trip not found
 
   /trips/{tripId}/payments:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
     post:
       tags: [Payments]
       summary: Create a payment for a completed trip
@@ -489,6 +499,8 @@ paths:
           description: Payment not found
 
   /trips/{tripId}/rating:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
     post:
       tags: [Ratings]
       summary: Rate a driver after a completed trip
@@ -1033,4 +1045,3 @@ components:
           type: number
           format: double
           example: 89.6
-
