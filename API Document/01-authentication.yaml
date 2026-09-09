@@ -1,0 +1,502 @@
+openapi: 3.0.3
+info:
+  title: CAB System API
+  description: 'REST API for the CAB System - online cab booking and management platform.
+
+    The API supports customers, drivers, vehicles, trips, payments,
+
+    notifications and operational management.
+
+    '
+  version: 1.0.0
+servers:
+- url: https://api.cabsystem.example.com/api/v1
+  description: Production server
+- url: http://localhost:3000/api/v1
+  description: Local development server
+security:
+- bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    VehicleId:
+      name: vehicleId
+      in: path
+      required: true
+      schema:
+        type: integer
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: integer
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+      - fullName
+      - phone
+      - password
+      - role
+      properties:
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: 0901234567
+        email:
+          type: string
+          format: email
+          example: customer@example.com
+        password:
+          type: string
+          format: password
+          example: Password123!
+        role:
+          type: string
+          enum:
+          - CUSTOMER
+          - DRIVER
+    LoginRequest:
+      type: object
+      required:
+      - phone
+      - password
+      properties:
+        phone:
+          type: string
+          example: 0901234567
+        password:
+          type: string
+          format: password
+          example: Password123!
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIs...
+        tokenType:
+          type: string
+          example: Bearer
+        user:
+          $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: 0901234567
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum:
+          - CUSTOMER
+          - DRIVER
+          - OPERATOR
+          - ADMIN
+    Customer:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          address:
+            type: string
+            example: 123 Nguyen Trai, District 1
+    CustomerUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+    Driver:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          status:
+            type: string
+            enum:
+            - AVAILABLE
+            - BUSY
+            - OFFLINE
+          vehicle:
+            $ref: '#/components/schemas/Vehicle'
+    DriverUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        type:
+          type: string
+          enum:
+          - MOTORBIKE
+          - CAR_4_SEAT
+          - CAR_7_SEAT
+          example: CAR_4_SEAT
+        licensePlate:
+          type: string
+          example: 51A-123.45
+        driverId:
+          type: integer
+          example: 5
+    VehicleRequest:
+      type: object
+      required:
+      - type
+      - licensePlate
+      properties:
+        type:
+          type: string
+          enum:
+          - MOTORBIKE
+          - CAR_4_SEAT
+          - CAR_7_SEAT
+        licensePlate:
+          type: string
+          example: 51A-123.45
+        driverId:
+          type: integer
+          example: 5
+    CreateTripRequest:
+      type: object
+      required:
+      - pickupAddress
+      - destinationAddress
+      - vehicleType
+      properties:
+        pickupAddress:
+          type: string
+          example: 123 Nguyen Trai, District 1
+        destinationAddress:
+          type: string
+          example: Tan Son Nhat International Airport
+        pickupLatitude:
+          type: number
+          format: double
+          example: 10.762622
+        pickupLongitude:
+          type: number
+          format: double
+          example: 106.660172
+        destinationLatitude:
+          type: number
+          format: double
+          example: 10.8188
+        destinationLongitude:
+          type: number
+          format: double
+          example: 106.6519
+        vehicleType:
+          type: string
+          enum:
+          - MOTORBIKE
+          - CAR_4_SEAT
+          - CAR_7_SEAT
+    Trip:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        customerId:
+          type: integer
+          example: 1
+        driverId:
+          type: integer
+          nullable: true
+          example: 5
+        vehicleId:
+          type: integer
+          nullable: true
+          example: 10
+        pickupAddress:
+          type: string
+          example: 123 Nguyen Trai, District 1
+        destinationAddress:
+          type: string
+          example: Tan Son Nhat International Airport
+        vehicleType:
+          type: string
+          enum:
+          - MOTORBIKE
+          - CAR_4_SEAT
+          - CAR_7_SEAT
+        status:
+          $ref: '#/components/schemas/TripStatus'
+        fare:
+          type: number
+          format: double
+          example: 85000
+        createdAt:
+          type: string
+          format: date-time
+          example: 2026-09-09 10:00:00+00:00
+    TripStatus:
+      type: string
+      enum:
+      - SEARCHING_DRIVER
+      - DRIVER_ASSIGNED
+      - DRIVER_ARRIVING
+      - PASSENGER_PICKED_UP
+      - IN_PROGRESS
+      - COMPLETED
+      - CANCELLED
+    TripListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trip'
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 100
+    FareResponse:
+      type: object
+      properties:
+        tripId:
+          type: integer
+          example: 1001
+        amount:
+          type: number
+          format: double
+          example: 85000
+        currency:
+          type: string
+          example: VND
+    PaymentRequest:
+      type: object
+      required:
+      - method
+      properties:
+        method:
+          type: string
+          enum:
+          - CASH
+          - ELECTRONIC
+          example: ELECTRONIC
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5001
+        tripId:
+          type: integer
+          example: 1001
+        method:
+          type: string
+          enum:
+          - CASH
+          - ELECTRONIC
+        amount:
+          type: number
+          format: double
+          example: 85000
+        status:
+          type: string
+          enum:
+          - PENDING
+          - SUCCESS
+          - FAILED
+        transactionId:
+          type: string
+          nullable: true
+          example: TXN-20260909-0001
+        createdAt:
+          type: string
+          format: date-time
+    RatingRequest:
+      type: object
+      required:
+      - rating
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Driver was polite and arrived quickly.
+    Rating:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 9001
+        tripId:
+          type: integer
+          example: 1001
+        customerId:
+          type: integer
+          example: 1
+        driverId:
+          type: integer
+          example: 5
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7001
+        recipientId:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Trip status updated
+        content:
+          type: string
+          example: Your driver has arrived at the pickup point.
+        type:
+          type: string
+          enum:
+          - TRIP
+          - PAYMENT
+          - SYSTEM
+        read:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+    Report:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        totalTrips:
+          type: integer
+          example: 1250
+        completedTrips:
+          type: integer
+          example: 1120
+        cancelledTrips:
+          type: integer
+          example: 130
+        revenue:
+          type: number
+          format: double
+          example: 98500000
+        completionRate:
+          type: number
+          format: double
+          example: 89.6
+tags:
+- name: Authentication
+  description: Registration and login
+paths:
+  /auth/register:
+    post:
+      tags:
+      - Authentication
+      summary: Register a new account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid registration data
+        '409':
+          description: Phone number or email already exists
+  /auth/login:
+    post:
+      tags:
+      - Authentication
+      summary: Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
